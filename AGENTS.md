@@ -5,7 +5,7 @@
 Package manager: **bun only** — npm, yarn, pnpm 사용 금지.
 
 ```bash
-bun install                # 의존성 설치
+bun install                # 의존성 설치 + pre-commit 보안 훅 자동 활성화 (prepare)
 bun run dev                # API 서버(3002) + Vite(5173) 동시 실행
 bun run server             # API 서버만 실행 (--watch 포함)
 bun run build              # tsc + vite build

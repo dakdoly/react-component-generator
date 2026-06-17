@@ -1,0 +1,109 @@
+#!/bin/sh
+# .githooks/pre-commit
+# 민감 파일/시크릿 커밋 차단
+# 우회: git commit --no-verify (비권장)
+
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+BLOCKED=0
+REASONS=""
+
+add_reason() {
+  REASONS="${REASONS}  $1\n"
+  BLOCKED=1
+}
+
+# ──────────────────────────────────────────────
+# Stage 1: 파일명 검사
+# ──────────────────────────────────────────────
+STAGED=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null)
+
+for FILE in $STAGED; do
+  BASENAME=$(basename "$FILE")
+
+  # .env 계열 — .env.example / .env.*.example 은 허용
+  if echo "$BASENAME" | grep -qE '^\.env(\.|$)'; then
+    if ! echo "$BASENAME" | grep -qE '\.example$'; then
+      add_reason "[파일명] $FILE  (.env 계열 파일)"
+      continue
+    fi
+  fi
+
+  # 인증서·키 파일 — .pub(공개키)는 허용
+  if echo "$BASENAME" | grep -qE '\.(pem|key|p12|pfx|keystore)$'; then
+    if ! echo "$BASENAME" | grep -qE '\.pub$'; then
+      add_reason "[파일명] $FILE  (인증서/키 파일)"
+      continue
+    fi
+  fi
+
+  # SSH 개인키
+  if echo "$BASENAME" | grep -qE '^id_(rsa|dsa|ecdsa|ed25519)$'; then
+    add_reason "[파일명] $FILE  (SSH 개인키)"
+    continue
+  fi
+
+  # 파일명에 credentials/secret 포함 (대소문자 무시)
+  if echo "$BASENAME" | grep -qiE '(credential|secret)'; then
+    add_reason "[파일명] $FILE  (민감 키워드 포함)"
+    continue
+  fi
+
+  # 플랫폼별 시크릿 파일
+  if echo "$BASENAME" | grep -qE '^(google-services\.json|GoogleService-Info\.plist)$'; then
+    add_reason "[파일명] $FILE  (플랫폼 시크릿 파일)"
+    continue
+  fi
+done
+
+# ──────────────────────────────────────────────
+# Stage 2: 내용 검사 (staged diff 추가 라인만)
+# ──────────────────────────────────────────────
+ADDED=$(git diff --cached --unified=0 2>/dev/null \
+  | grep -E '^\+[^+]' \
+  | sed 's/^\+//')
+
+# Anthropic API 키
+if echo "$ADDED" | grep -qE 'ANTHROPIC_API_KEY\s*[=:]\s*sk-ant-'; then
+  PREVIEW=$(echo "$ADDED" \
+    | grep -E 'ANTHROPIC_API_KEY\s*[=:]\s*sk-ant-' \
+    | head -1 \
+    | cut -c1-80)
+  add_reason "[내용] Anthropic API 키 감지 → $PREVIEW"
+fi
+
+# Google API 키
+if echo "$ADDED" | grep -qE 'GOOGLE_API_KEY\s*[=:]\s*AIza'; then
+  PREVIEW=$(echo "$ADDED" \
+    | grep -E 'GOOGLE_API_KEY\s*[=:]\s*AIza' \
+    | head -1 \
+    | cut -c1-80)
+  add_reason "[내용] Google API 키 감지 → $PREVIEW"
+fi
+
+# 제네릭 시크릿 (api_key, secret, token 에 따옴표 포함 20자 이상 값)
+if echo "$ADDED" | grep -qiE '(api.?key|secret|token)\s*[=:]\s*['"'"'"]?[A-Za-z0-9+/_-]{20,}'; then
+  PREVIEW=$(echo "$ADDED" \
+    | grep -iE '(api.?key|secret|token)\s*[=:]\s*['"'"'"]?[A-Za-z0-9+/_-]{20,}' \
+    | head -1 \
+    | cut -c1-80)
+  add_reason "[내용] 시크릿 패턴 감지 → $PREVIEW"
+fi
+
+# ──────────────────────────────────────────────
+# 결과 출력
+# ──────────────────────────────────────────────
+if [ "$BLOCKED" -eq 1 ]; then
+  printf "\n${RED}COMMIT BLOCKED: 민감 파일/내용이 감지되었습니다.${NC}\n\n"
+  printf "차단 사유:\n"
+  printf "$REASONS"
+  printf "\n해결 방법:\n"
+  printf "  git reset HEAD <파일>           # 스테이지에서 제거\n"
+  printf "  echo '<파일>' >> .gitignore     # 이후 커밋 방지\n"
+  printf "\n${YELLOW}강제 커밋 (비권장): git commit --no-verify${NC}\n\n"
+  exit 1
+fi
+
+exit 0
