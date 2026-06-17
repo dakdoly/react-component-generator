@@ -12,6 +12,7 @@ export function useLocalStorage<T>(
       const item = localStorage.getItem(key);
       if (item === null) return initialValue;
       const parsed: unknown = JSON.parse(item);
+      // reviver가 throw해도 catch에서 initialValue로 폴백
       return reviver ? reviver(parsed) : (parsed as T);
     } catch {
       return initialValue;

@@ -83,10 +83,11 @@ if echo "$ADDED" | grep -qE 'GOOGLE_API_KEY\s*[=:]\s*AIza'; then
   add_reason "[내용] Google API 키 감지 → $PREVIEW"
 fi
 
-# 제네릭 시크릿 (api_key, secret, token 에 따옴표 포함 20자 이상 값)
-if echo "$ADDED" | grep -qiE '(api.?key|secret|token)\s*[=:]\s*['"'"'"]?[A-Za-z0-9+/_-]{20,}'; then
+# 제네릭 시크릿 (api_key, secret 에 따옴표 포함 20자 이상 값)
+# token 은 일반 변수명과 충돌이 잦아 제외; access_token/auth_token 형태만 포함
+if echo "$ADDED" | grep -qiE '(api.?key|secret|access_token|auth_token)\s*[=:]\s*['"'"'"]?[A-Za-z0-9+/_-]{20,}'; then
   PREVIEW=$(echo "$ADDED" \
-    | grep -iE '(api.?key|secret|token)\s*[=:]\s*['"'"'"]?[A-Za-z0-9+/_-]{20,}' \
+    | grep -iE '(api.?key|secret|access_token|auth_token)\s*[=:]\s*['"'"'"]?[A-Za-z0-9+/_-]{20,}' \
     | head -1 \
     | cut -c1-80)
   add_reason "[내용] 시크릿 패턴 감지 → $PREVIEW"
@@ -98,7 +99,7 @@ fi
 if [ "$BLOCKED" -eq 1 ]; then
   printf "\n${RED}COMMIT BLOCKED: 민감 파일/내용이 감지되었습니다.${NC}\n\n"
   printf "차단 사유:\n"
-  printf "$REASONS"
+  printf "%s" "$REASONS"
   printf "\n해결 방법:\n"
   printf "  git reset HEAD <파일>           # 스테이지에서 제거\n"
   printf "  echo '<파일>' >> .gitignore     # 이후 커밋 방지\n"

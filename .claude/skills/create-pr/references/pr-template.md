@@ -1,6 +1,6 @@
 # PR 본문 템플릿
 
-<!-- 이 파일은 pr 스킬(.claude/skills/pr/SKILL.md)의 PR 본문 템플릿입니다. -->
+<!-- 이 파일은 pr 스킬(.claude/skills/create-pr/SKILL.md)의 PR 본문 템플릿입니다. -->
 <!-- 섹션을 추가/제거하여 프로젝트에 맞게 커스터마이징하세요. -->
 
 ## Summary

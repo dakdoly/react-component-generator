@@ -40,12 +40,13 @@ bun run lint
 **컴포넌트 구조**
 
 ```
-App.tsx          — 레이아웃, provider/apiKey 상태, envKeys 조회 (GET /api/config)
-PromptInput      — 프롬프트 입력 폼 + 예시 프롬프트
-ComponentCard    — 생성된 컴포넌트 카드 (재생성/삭제 포함)
-LivePreview      — react-live로 코드 실행 및 렌더링
-CodeView         — 생성된 코드 표시
-useComponentGenerator — 생성 상태(components, isLoading, error) 관리
+App.tsx               — 레이아웃, provider/apiKey(localStorage) 상태, envKeys 조회
+PromptInput           — 프롬프트 입력 폼 + 최근 프롬프트 히스토리 칩
+ComponentCard         — 생성된 컴포넌트 카드 (재생성/삭제 포함)
+LivePreview           — react-live로 코드 실행 및 렌더링
+CodeView              — 생성된 코드 표시
+useComponentGenerator — components·promptHistory 영속화, generate·clearAll·clearHistory
+useLocalStorage       — localStorage 동기화 제네릭 훅 (reviver 지원)
 ```
 
 ## AI 생성 코드 제약사항
