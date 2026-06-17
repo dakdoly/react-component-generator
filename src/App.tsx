@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { PromptInput } from './components/PromptInput';
 import { ComponentCard } from './components/ComponentCard';
 import { useComponentGenerator } from './hooks/useComponentGenerator';
@@ -15,7 +15,7 @@ function App() {
   const [apiKey, setApiKey] = useLocalStorage('rcg:apiKey', '');
   const [showKey, setShowKey] = useLocalStorage('rcg:showKey', false);
   const [provider, setProvider] = useLocalStorage<Provider>('rcg:provider', 'google');
-  const [envKeys, setEnvKeys] = useLocalStorage<Record<Provider, boolean>>('rcg:envKeys', {
+  const [envKeys, setEnvKeys] = useState<Record<Provider, boolean>>({
     anthropic: false,
     google: false,
   });

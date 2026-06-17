@@ -1,4 +1,4 @@
-import { renderHook, act, waitFor } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import { useComponentGenerator } from './useComponentGenerator'
 
 const mockFetch = vi.fn()

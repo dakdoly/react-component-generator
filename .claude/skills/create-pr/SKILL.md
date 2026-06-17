@@ -16,7 +16,7 @@ allowed-tools: Read, Glob, Grep, Bash
 ## 목적
 
 커밋 히스토리와 diff를 분석하여 일관된 형식의 PR을 빠르게 생성합니다.  
-템플릿 경로: `.claude/skills/pr/references/pr-template.md`
+템플릿 경로: `.claude/skills/create-pr/references/pr-template.md`
 
 ---
 
@@ -38,7 +38,7 @@ git diff main...HEAD --stat         # 변경 파일 요약
 
 ### 2단계: PR 초안 작성
 
-`.claude/skills/pr/references/pr-template.md`를 읽어 섹션 구조를 파악한 뒤 채운다.
+`.claude/skills/create-pr/references/pr-template.md`를 읽어 섹션 구조를 파악한 뒤 채운다.
 
 **제목 규칙:**
 - 70자 이내
