@@ -1,0 +1,61 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Crimson+Text:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --background: #f5ede3;
+  --foreground: #2a2421;
+}
+
+body {
+  font-family: 'Inter', 'Crimson Text', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #f5ede3 0%, #faf7f2 100%);
+  color: var(--foreground);
+  min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(74, 68, 62, 0.03) 2px,
+      rgba(74, 68, 62, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(74, 68, 62, 0.03) 2px,
+      rgba(74, 68, 62, 0.03) 4px
+    );
+  pointer-events: none;
+  z-index: 1;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
